@@ -1,0 +1,186 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Repository {
+  id             String   @id @default(cuid())
+  githubId       Int?     @unique
+  fullName       String   @unique
+  ownerLogin     String
+  name           String
+  description    String?
+  homepage       String?
+  htmlUrl        String
+  language       String?
+  stars          Int      @default(0)
+  forks          Int      @default(0)
+  openIssues     Int      @default(0)
+  createdAt      DateTime
+  updatedAt      DateTime
+  pushedAt       DateTime
+  licenseSpdxId  String?
+  topics         String   // JSON stringified array of topics
+  archived       Boolean  @default(false)
+  fetchedAt      DateTime @default(now())
+
+  snapshots      RepositorySnapshot[]
+  demoLinks      DemoLink[]
+  favorites      Favorite[]
+  demoResources  DemoResource[]
+  enrichments    ProjectEnrichment[]
+
+  @@index([stars])
+  @@index([language])
+  @@index([pushedAt])
+}
+
+model RepositorySnapshot {
+  id           String     @id @default(cuid())
+  repositoryId String
+  repository   Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  capturedAt   DateTime   @default(now())
+  stars        Int
+  forks        Int
+  openIssues   Int
+  trendSource  String?    // "trending-today", "trending-week", "trending-month", "search-sync"
+  trendRank    Int?
+
+  @@index([repositoryId, capturedAt])
+  @@index([capturedAt])
+}
+
+model DemoLink {
+  id                 String     @id @default(cuid())
+  repositoryId       String
+  repository         Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  url                String
+  source             String     // "homepage", "readme", "github-pages"
+  category           String     // "web-app", "interactive", "docs", "unknown"
+  verificationStatus String     // "verified", "unverified", "docs-only", "none", "check_failed"
+  lastCheckedAt      DateTime   @default(now())
+
+  @@index([repositoryId])
+  @@index([verificationStatus])
+}
+
+model DemoResource {
+  id                 String     @id @default(cuid())
+  repositoryId       String
+  repository         Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  url                String
+  demoType           String     // "playground", "web-game", "model-demo", "interactive-docs", "unknown"
+  verificationStatus String     // "verified", "found_unverified", "docs_only", "none", "check_failed"
+  isOfficial         Boolean    @default(true)
+  evidenceSource     String     // "homepage", "readme-link", "github-pages", "release-notes"
+  lastCheckedAt      DateTime   @default(now())
+  checkError         String?
+  requiresAuth       Boolean    @default(false)
+
+  @@index([repositoryId])
+  @@index([verificationStatus])
+}
+
+model ProjectEnrichment {
+  id                 String     @id @default(cuid())
+  repositoryId       String
+  repository         Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  aiCategory         String?    // "text-to-video", "image-gen", "voice-tts", "lip-sync", "3d-gen", "code-assistant", "local-llm", "workflow", "other"
+  freeType           String?    // "free-selfhost", "free-tier", "free-trial", "open-source-costly", "unknown"
+  windowsCompatibility String? // "native", "wsl2-required", "docker-required", "unsupported", "unknown"
+  hardwareSummary    String?    // JSON summary of CPU, RAM, GPU, VRAM requirements
+  installDifficulty  String?    // "easy", "medium", "advanced", "expert"
+  zhExplanation      String?    // Structured explanation (JSON or Markdown)
+  explanationMode    String?    // "rules-extracted", "local-llm", "cloud-ai"
+  sourceEvidence     String?
+  updatedAt          DateTime   @updatedAt
+
+  @@index([repositoryId])
+  @@index([aiCategory])
+  @@index([freeType])
+}
+
+model Favorite {
+  id           String     @id @default(cuid())
+  repositoryId String
+  repository   Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  status       String     @default("want-to-try") // "want-to-try", "want-to-install", "want-to-study", "making-similar", "tried"
+  note         String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@unique([repositoryId])
+  @@index([status])
+}
+
+model SearchHistory {
+  id        String   @id @default(cuid())
+  query     String
+  filters   String?  // JSON stringified filters
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+model DailyReport {
+  id          String   @id @default(cuid())
+  reportDate  String   @unique // e.g. "2026-10-22"
+  timezone    String   @default("Asia/Taipei")
+  title       String
+  summary     String?
+  contentJson String   // Structured JSON content containing categories & ranked projects
+  contentMd   String?  // Markdown representation for easy export
+  dataSource  String   // "github-rest-api-velocity"
+  generatedAt DateTime @default(now())
+  status      String   @default("completed") // "completed", "failed", "generating"
+  errorMsg    String?
+  executionId String   @unique // Unique run ID to prevent duplicate generation
+
+  @@index([reportDate])
+  @@index([generatedAt])
+}
+
+model ResearchReport {
+  id          String   @id @default(cuid())
+  userQuery   String
+  searchFilter String? // JSON filters used
+  candidateIds String  // JSON array of repository fullNames/IDs
+  resultsJson String   // Structured JSON analysis (pros, cons, compatibility, recommendations)
+  analysisMode String  // "rule-based", "local-llm", "cloud-ai"
+  createdAt   DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+model UserHardwareProfile {
+  id             String   @id @default(cuid())
+  os             String   @default("Windows 11") // "Windows 10", "Windows 11", "Linux", "macOS"
+  cpuArch        String   @default("x64")        // "x64", "ARM64", "unknown"
+  ramGb          Int      @default(16)
+  gpuType        String   @default("NVIDIA")     // "NVIDIA", "AMD", "Intel", "integrated", "none", "unknown"
+  vramGb         Int      @default(8)
+  hasWsl2        Boolean  @default(true)
+  hasDocker      Boolean  @default(true)
+  hasPython      Boolean  @default(true)
+  hasNode        Boolean  @default(true)
+  freeDiskGb     Int      @default(50)
+  targetIntent   String   @default("play")       // "play", "develop", "video-gen", "image-gen", "3d", "games"
+  updatedAt      DateTime @updatedAt
+}
+
+model User {
+  id           String    @id @default(cuid())
+  username     String    @unique
+  email        String?   @unique
+  passwordHash String
+  avatarUrl    String?
+  githubToken  String?   // 個人 GitHub Token，用以提高 API 查詢配額至 5000 次/小時
+  role         String    @default("user") // "admin", "user"
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#080c14"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="glowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#06b6d4"/>
+      <stop offset="50%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#9333ea"/>
+    </linearGradient>
+  </defs>
+  <!-- Background rounded rect -->
+  <rect x="8" y="8" width="240" height="240" rx="54" fill="url(#bgGrad)" stroke="url(#glowGrad)" stroke-width="6"/>
+  <!-- Concentric radar circles -->
+  <circle cx="128" cy="128" r="88" fill="none" stroke="#1e293b" stroke-width="3"/>
+  <circle cx="128" cy="128" r="62" fill="none" stroke="#334155" stroke-width="2.5"/>
+  <circle cx="128" cy="128" r="36" fill="none" stroke="#0ea5e9" stroke-width="3" stroke-dasharray="6,4"/>
+  <!-- Radar sweep line -->
+  <line x1="128" y1="128" x2="200" y2="70" stroke="#38bdf8" stroke-width="4" stroke-linecap="round"/>
+  <!-- Crosshairs -->
+  <line x1="128" y1="36" x2="128" y2="220" stroke="#1e293b" stroke-width="2"/>
+  <line x1="36" y1="128" x2="220" y2="128" stroke="#1e293b" stroke-width="2"/>
+  <!-- Target blips -->
+  <circle cx="178" cy="85" r="7" fill="#06b6d4"/>
+  <circle cx="178" cy="85" r="14" fill="none" stroke="#06b6d4" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="85" cy="165" r="5" fill="#a855f7"/>
+  <circle cx="155" cy="150" r="4.5" fill="#10b981"/>
+  <!-- Center hub -->
+  <circle cx="128" cy="128" r="8" fill="#38bdf8"/>
+</svg>
