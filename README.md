@@ -12,7 +12,7 @@
 ## 🇹🇼 繁體中文
 ### 🖥️ 軟體畫面預覽
 
-![GitHub Explorer V2 主畫面]([docs/images/main-window.png](https://github.com/a10129800/github-explorer-v2/blob/main/docs/main-window..png))
+![GitHub Explorer V2 主畫面]([docs/images/main-window.png](https://github.com/a10129800/github-explorer-v2/blob/main/docs/main-window..png)
 ### 專案介紹
 
 GitHub Explorer V2 是一款用來探索 GitHub 開源專案的工具，希望讓使用者更方便地發現、瀏覽與探索有趣的專案。
