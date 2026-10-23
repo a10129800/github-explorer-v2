@@ -11,7 +11,8 @@
 
 ## 🇹🇼 繁體中文
 ### 🖥️ 軟體畫面預覽
-![圖片說明]([https://github.com/a10129800/github-explorer-v2/blob/main/docs/main-window..png?raw=true])
+<img src="https://github.com/a10129800/github-explorer-v2/blob/main/docs/main-window..png?raw=true" width="300" alt="圖片說明">
+
 
 
 ### 專案介紹
